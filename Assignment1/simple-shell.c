@@ -1,6 +1,6 @@
 /*
 FILENAME : simple-shell.c
-// test
+
 DESCRIPTION :
   Designing a C program accepting user commands and serving in sort of shell's way
 
