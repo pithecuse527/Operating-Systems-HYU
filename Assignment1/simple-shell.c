@@ -11,7 +11,8 @@ AUTHOR :  Hong Geun Ji      START DATE : 23 Mar 2021
 
 CHANGES :
   NO   VERSION   DATE         WHO           DETAIL
-  1    1.1       24 Mar 2021  Hong Geun Ji  change the way to print the prompt string
+  1    1.1       24 Mar 2021  Hong Geun Ji  Change the way to print the prompt string
+  2    1.2       25 Mar 2021  Hong Geun Ji  Complete the command parsing
 
 */
 
@@ -33,7 +34,8 @@ int main(void)
   char** args = (char**)malloc(MAX_LINE*sizeof(char*)/2+sizeof(char*)); // cmd line arguments
   char* usr_cmd = (char*)malloc(MAX_LINE*sizeof(char)+sizeof(char));   // user command line ready
   char* prompt = "osh> "; // string for the prompt
-  int args_i = 0;  // index for the args
+  char* tmp_str;  // tmp string for token
+  int i = 0;  // index for the args
   int cmd_len; // the length of the user command line
 
   // prompt runs until it meets
@@ -58,15 +60,13 @@ int main(void)
     *(usr_cmd+cmd_len-1) = '\0'; // swap the '\n' to null character
 
     /**************** parsing command *****************/
-    *args = strtok(usr_cmd, " "); // get the first token
-    while(*(args+args_i)){
-      printf("%s\n", *(args+args_i));
-      *(args+args_i) = strtok(NULL, " ");
-      args_i++;
+    *args = strtok(usr_cmd, " ");
+    while(*(args+i))
+    {
+      i++;
+      *(args+i) = strtok(NULL, " ");  // parse the next location from right before
     }
-
     /**************** parsing command *****************/
-
 
   } // while
   return 0;
