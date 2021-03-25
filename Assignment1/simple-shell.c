@@ -13,7 +13,6 @@ CHANGES :
   NO   VERSION   DATE         WHO           DETAIL
   1    1.1       24 Mar 2021  Hong Geun Ji  Change the way to print the prompt string
   2    1.2       25 Mar 2021  Hong Geun Ji  Complete the command parsing
-
 */
 
 #include <stdio.h>
