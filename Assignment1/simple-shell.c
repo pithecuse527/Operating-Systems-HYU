@@ -18,7 +18,7 @@ CHANGES :
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <string.h>
+#include <string.h> // test
 
 #define MAX_LINE 20 // the maximum length command
 #define TRUE 1
