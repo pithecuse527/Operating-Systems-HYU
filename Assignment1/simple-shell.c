@@ -68,7 +68,7 @@ int main(void)
     /**************** parsing command *****************/
 
   } // while
-  
-  return 0;
 
+  return 0;
+  // todo: test git push
 }
