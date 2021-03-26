@@ -31,16 +31,16 @@ CHANGES :
 int main(void)
 {
   char** args = (char**)malloc(MAX_LINE*sizeof(char*)/2+sizeof(char*)); // cmd line arguments
-  char* usr_cmd = (char*)malloc(MAX_LINE*sizeof(char)+sizeof(char));   // user command line ready
+  char* usr_cmd = (char*)malloc(MAX_LINE*sizeof(char)+sizeof(char));    // user command line ready
   char* prompt = "osh> "; // string for the prompt
   char* tmp_str;  // tmp string for token
-  int i = 0;  // index for the args
-  int cmd_len; // the length of the user command line
+  int i = 0;      // index for the args
+  int cmd_len;    // the length of the user command line
 
   // prompt runs until it meets
   while(TRUE)
   {
-    /**************** user command input sequence *****************/
+    /**************** area for user command input sequence *****************/
     // use system call to print right away
     if(!write(STDOUT_FILENO, prompt, PROMPT_BUFF_SIZE))
     {
@@ -50,22 +50,22 @@ int main(void)
     }
     if((cmd_len = read(STDIN_FILENO, usr_cmd, MAX_LINE+1)) > MAX_LINE)
     {
-      // use *stderr to let fprintf prints error right away
+      // use stderr file to let fprintf prints error right away
       fprintf(stderr, "command error! may be too long?\n\n");
       exit(EXIT_FAILURE);
     }
-    /**************** user command input sequence *****************/
+    /**************** area for user command input sequence *****************/
 
     *(usr_cmd+cmd_len-1) = '\0'; // swap the '\n' to null character
 
-    /**************** parsing command *****************/
+    /**************** area for parse command *****************/
     *args = strtok(usr_cmd, " ");
     while(*(args+i))
     {
       i++;
       *(args+i) = strtok(NULL, " ");  // parse the next location from right before
     }
-    /**************** parsing command *****************/
+    /**************** area for parse command *****************/
 
   } // while
 
