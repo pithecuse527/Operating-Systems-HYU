@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <pthread.h>
+#define TRUE 1
+#define FASLE 0
 
 /*
  * 기본 스도쿠 퍼즐
@@ -19,13 +21,40 @@ int sudoku[9][9] = {{6,3,9,8,4,1,2,7,5},{7,2,4,9,5,3,1,6,8},{1,8,5,7,2,6,3,9,4},
  */
 int valid[3][9];
 
+/* structure for passing data to threads
+ * this will only be used for subgrid checking
+ */
+typedef struct {
+	int row;
+	int column;
+} location_t;
+
+// array elements reset to 0
+void array_reset(void *arr, int arr_size)
+{
+	int i;
+	for(i = 0; i < arr_size; ++i) arr[i] = 0;
+}
+
 /*
  * 스도쿠 퍼즐의 각 행이 올바른지 검사한다.
  * 행 번호는 0부터 시작하며, i번 행이 올바르면 valid[0][i]에 1을 기록한다.
  */
 void *check_rows(void *arg)
 {
-    // 여기를 완성하세요
+	// running index
+    int i;
+
+	// total checked elements of the row
+	// if the total == 9, it means there is no problem with the given sdoku row
+	// this will allow us to check whether the certain row is valid in O(1)
+	int total = 0;
+
+	// todo1: use valid arr.
+	array_reset(row_check, 9);
+	for(i = 0; i < 9; ++i) {
+		if()
+	}
 }
 
 /*
@@ -54,8 +83,24 @@ void *check_subgrid(void *arg)
  */
 void check_sudoku(void)
 {
+	// running indices
     int i, j;
-    
+
+	// for this project, only 11 threads are required
+	int worker_num = 0;		// worker #
+	pthread_t* workers;
+	if((workers = malloc(sizeof(pthread_t*11)) == NULL) {
+		fprintf(stderr, "malloc error: allocation for workers\n");
+		exit(-1);
+	}
+
+	// the structure for passing to the subgrid checking
+	location_t *data;
+	if((data = malloc(sizeof(location_t)) == NULL) {
+		fprintf(stderr, "malloc error: allocation for data\n");
+		exit(-1);
+	}
+
     /*
      * 검증하기 전에 먼저 스도쿠 퍼즐의 값을 출력한다.
      */
@@ -65,23 +110,43 @@ void check_sudoku(void)
         printf("\n");
     }
     printf("---\n");
+
     /*
      * 스레드를 생성하여 각 행을 검사하는 check_rows() 함수를 실행한다.
      */
-    // 여기를 완성하세요
+    if (pthread_create(&workers[worker_num++], NULL, check_rows, NULL) != 0) {		// worker0 checks the rows
+        fprintf(stderr, "pthread_create error: check_rows\n");
+        exit(-1);
+    }
+
     /*
      * 스레드를 생성하여 각 열을 검사하는 check_columns() 함수를 실행한다.
      */
-    // 여기를 완성하세요
+    if (pthread_create(&workers[worker_num++], NULL, check_columns, NULL) != 0) {	// worker1 checks the columns
+        fprintf(stderr, "pthread_create error: check_columns\n");
+        exit(-1);
+    }
+
     /*
      * 9개의 스레드를 생성하여 각 3x3 서브그리드를 검사하는 check_subgrid() 함수를 실행한다.
      * 3x3 서브그리드의 위치를 식별할 수 있는 값을 함수의 인자로 넘긴다.
      */
-    // 여기를 완성하세요
+	for (i = 0; i < 9; i += 3) {
+		data -> row = i;
+		for (j = 0; j < 9; j += 3) {
+			data -> col = j;
+			if(pthread_create(&workers[worker_num++], NULL, check_subgrid, data) != 0) {	// pass the data saving the row and col to check
+				fprintf(stderr, "pthread_create error: check_subgrid\n");
+				exit(-1);
+			}
+		}
+	}
+
     /*
      * 11개의 스레드가 종료할 때까지 기다린다.
      */
-    // 여기를 완성하세요
+    for (i = 0; i < 11; ++i) pthread_join(workers[i], NULL);
+
     /*
      * 각 행에 대한 검증 결과를 출력한다.
      */
@@ -89,6 +154,7 @@ void check_sudoku(void)
     for (i = 0; i < 9; ++i)
         printf(valid[0][i] == 1 ? "(%d,YES)" : "(%d,NO)", i);
     printf("\n");
+
     /*
      * 각 열에 대한 검증 결과를 출력한다.
      */
@@ -96,6 +162,7 @@ void check_sudoku(void)
     for (i = 0; i < 9; ++i)
         printf(valid[1][i] == 1 ? "(%d,YES)" : "(%d,NO)", i);
     printf("\n");
+
     /*
      * 각 3x3 서브그리드에 대한 검증 결과를 출력한다.
      */
@@ -114,7 +181,7 @@ void *shuffle_sudoku(void *arg)
     int grid;
     int row1, row2;
     int col1, col2;
-    
+
     srand(time(NULL));
     for (i = 0; i < 100; ++i) {
         /*
@@ -157,7 +224,7 @@ int main(void)
 {
     int tmp;
     pthread_t tid;
-    
+
     /*
      * 기본 스도쿠 퍼즐을 출력하고 검증한다.
      */
