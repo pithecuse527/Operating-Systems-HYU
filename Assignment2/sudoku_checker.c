@@ -25,18 +25,18 @@ int valid[3][9];
  * this will only be used for subgrid checking
  */
 typedef struct {
-	int row;
-	int col;
-	int sudgrid_worker_num;
-} location_t;
+		int row;
+		int col;
+		int sudgrid_worker_num;
+}  location_t;
 
 pthread_mutex_t lock;
 
 // array elements reset to 0
 void array_reset(int *arr, int arr_size, int to_what)
 {
-	int i;
-	for(i = 0; i < arr_size; ++i) *(arr+i) = to_what;
+		int i;
+		for(i = 0; i < arr_size; ++i) *(arr+i) = to_what;
 }
 
 /*
@@ -45,39 +45,40 @@ void array_reset(int *arr, int arr_size, int to_what)
  */
 void *check_rows(void *arg)
 {
-	// running indices
-  int i, j;
+		// running indices
+  	int i, j;
 
-	// total checked elements of the row
-	// if the total == 9, it means there is no problem with the given sudoku row
-	// this will allow us to check whether the certain row is valid or not in O(1)
-	int total = 0;
+		// total checked elements of the row
+		// if the total == 9, it means there is no problem with the given sudoku row
+		// this will allow us to check whether the certain row is valid or not in O(1)
+		int total = 0;
 
-	// simple hash map to use the value inside of the sudoku row as a index
-	int row_hash[9];
+		// simple hash map to use the value inside of the sudoku row as a index
+		int row_hash[9];
 
-	// index for hash (== row value)
-	int hash_idx;
+		// index for hash (== row value)
+		int hash_idx;
 
-	// reset every element to 0
-	array_reset(&valid[0][0], 9, 0);
-	array_reset(row_hash, 9, 0);
-
-	// check every elements
-	for(i = 0; i < 9; ++i) {
-		for(j = 0; j < 9; ++j) {
-			hash_idx = sudoku[i][j]-1;
-			if(!row_hash[hash_idx]) {		// if there hasn't showed up the row value,
-				row_hash[hash_idx] = 1;
-				total++;
-			}
-			else break;	// no need to figure out the others
-		}
+		// reset every element to 0
+		array_reset(&valid[0][0], 9, 0);
 		array_reset(row_hash, 9, 0);
 
-		if(total == 9) valid[0][i] = 1;		// when the internal for loop haven't broken
-		total = 0;
-	}
+		// check every elements
+		for(i = 0; i < 9; ++i) {
+				for(j = 0; j < 9; ++j) {
+						hash_idx = sudoku[i][j]-1;
+						if(!row_hash[hash_idx]) {		// if there hasn't showed up the row value,
+								row_hash[hash_idx] = 1;
+								total++;
+						}
+						else break;	// no need to figure out the others
+					}
+					array_reset(row_hash, 9, 0);
+
+					if(total == 9) valid[0][i] = 1;		// when the internal for loop haven't broken
+					total = 0;
+		}
+		return 0;
 }
 
 /*
@@ -86,39 +87,40 @@ void *check_rows(void *arg)
  */
 void *check_columns(void *arg)
 {
-	// running indices
-	int i, j;
+		// running indices
+		int i, j;
 
-	// total checked elements of the column
-	// if the total == 9, it means there is no problem with the given sudoku column
-	// this will allow us to check whether the certain column is valid or not in O(1)
-	int total = 0;
+		// total checked elements of the column
+		// if the total == 9, it means there is no problem with the given sudoku column
+		// this will allow us to check whether the certain column is valid or not in O(1)
+		int total = 0;
 
-	// simple hash map to use the value inside of the sudoku column as a index
-	int col_hash[9];
+		// simple hash map to use the value inside of the sudoku column as a index
+		int col_hash[9];
 
-	// index for hash (== column value)
-	int hash_idx;
+		// index for hash (== column value)
+		int hash_idx;
 
-	// reset every element to 0
-	array_reset(&valid[1][0], 9, 0);
-	array_reset(col_hash, 9, 0);
-
-	// check every elements
-	for(i = 0; i < 9; ++i) {
-		for(j = 0; j < 9; ++j) {
-			hash_idx = sudoku[j][i]-1;
-			if(!col_hash[hash_idx]) {		// if there hasn't showed up the column value,
-				col_hash[hash_idx] = 1;
-				total++;
-			}
-			else break;	// no need to figure out the others
-		}
+		// reset every element to 0
+		array_reset(&valid[1][0], 9, 0);
 		array_reset(col_hash, 9, 0);
 
-		if(total == 9) valid[1][i] = 1;		// when the internal for loop haven't broken
-		total = 0;
-	}
+		// check every elements
+		for(i = 0; i < 9; ++i) {
+				for(j = 0; j < 9; ++j) {
+						hash_idx = sudoku[j][i]-1;
+						if(!col_hash[hash_idx]) {		// if there hasn't showed up the column value,
+								col_hash[hash_idx] = 1;
+								total++;
+						}
+						else break;	// no need to figure out the others
+				}
+				array_reset(col_hash, 9, 0);
+
+				if(total == 9) valid[1][i] = 1;		// when the internal for loop haven't broken
+				total = 0;
+		}
+		return 0;
 }
 
 /*
@@ -128,38 +130,38 @@ void *check_columns(void *arg)
  */
 void *check_subgrid(void *arg)
 {
-	location_t* data = (location_t*)arg;
+		location_t* data = (location_t*)arg;
 
-	// running indices
-	int i, j;
+		// running indices
+		int i, j;
 
-	// total checked elements of the subgrid
-	// if the total == 9, it means there is no problem with the given sudoku subgrid
-	// this will allow us to check whether the certain subgrid is valid or not in O(1)
-	int total = 0;
+		// total checked elements of the subgrid
+		// if the total == 9, it means there is no problem with the given sudoku subgrid
+		// this will allow us to check whether the certain subgrid is valid or not in O(1)
+		int total = 0;
 
-	// simple hash map to use the value inside of the sudoku subgrid as a index
-	int subgrid_hash[9];
+		// simple hash map to use the value inside of the sudoku subgrid as a index
+		int subgrid_hash[9];
 
-	// index for hash (== column value)
-	int hash_idx;
+		// index for hash (== column value)
+		int hash_idx;
 
-	// reset every element to 0
-	array_reset(subgrid_hash, 9, 0);
+		// reset every element to 0
+		array_reset(subgrid_hash, 9, 0);
 
-	// check every elements
-	for(i = data->row; i < data->row + 3; ++i) {
-		for(j = data->col; j < data->col + 3; ++j) {
-			hash_idx = sudoku[i][j]-1;
-			if(!subgrid_hash[hash_idx]) {		// if there hasn't showed up the subgrid value,
-				subgrid_hash[hash_idx] = 1;
-				total++;
-			}
-			else break;	// no need to figure out the others
+		// check every elements
+		for(i = data->row; i < data->row + 3; ++i) {
+				for(j = data->col; j < data->col + 3; ++j) {
+						hash_idx = sudoku[i][j]-1;
+						if(!subgrid_hash[hash_idx]) {		// if there hasn't showed up the subgrid value,
+								subgrid_hash[hash_idx] = 1;
+								total++;
+						}
+						else break;	// no need to figure out the others
+				}
 		}
-	}
-	if(total == 9) valid[2][data->sudgrid_worker_num] = 1;		// when the internal for loop haven't been broken
-	// pthread_mutex_unlock(&lock);
+		if(total == 9) valid[2][data->sudgrid_worker_num] = 1;		// when the internal for loop haven't been broken
+		return 0;
 }
 
 /*
@@ -169,91 +171,91 @@ void *check_subgrid(void *arg)
  */
 void check_sudoku(void)
 {
-	// running indices
-	int i, j;
+		// running indices
+		int i, j;
 
-	int worker_num = 0;		// worker #
-	pthread_t* workers;
+		int worker_num = 0;		// worker #
+		pthread_t* workers;
 
-	// for this project, only 11 threads are required
-	if((workers = malloc(sizeof(pthread_t)*11)) == NULL) {
-		fprintf(stderr, "malloc error: allocation for workers\n");
-		exit(-1);
-	}
+		// for this project, only 11 threads are required
+		if((workers = malloc(sizeof(pthread_t)*11)) == NULL) {
+				fprintf(stderr, "malloc error: allocation for workers\n");
+				exit(-1);
+		}
 
-    /*
-     * 검증하기 전에 먼저 스도쿠 퍼즐의 값을 출력한다.
-     */
-    for (i = 0; i < 9; ++i) {
-        for (j = 0; j < 9; ++j)
-            printf("%2d", sudoku[i][j]);
-        printf("\n");
-    }
-    printf("---\n");
+	    /*
+	     * 검증하기 전에 먼저 스도쿠 퍼즐의 값을 출력한다.
+	     */
+	    for (i = 0; i < 9; ++i) {
+					for (j = 0; j < 9; ++j)
+							printf("%2d", sudoku[i][j]);
+					printf("\n");
+	    }
+	    printf("---\n");
 
-    /*
-     * 스레드를 생성하여 각 행을 검사하는 check_rows() 함수를 실행한다.
-     */
-    if (pthread_create(&workers[worker_num++], NULL, check_rows, NULL) != 0) {		// worker0 checks the rows
-        fprintf(stderr, "pthread_create error: check_rows\n");
-        exit(-1);
-    }
+	    /*
+	     * 스레드를 생성하여 각 행을 검사하는 check_rows() 함수를 실행한다.
+	     */
+	    if (pthread_create(&workers[worker_num++], NULL, check_rows, NULL) != 0) {		// worker0 checks the rows
+					fprintf(stderr, "pthread_create error: check_rows\n");
+					exit(-1);
+	    }
 
-    /*
-     * 스레드를 생성하여 각 열을 검사하는 check_columns() 함수를 실행한다.
-     */
-    if (pthread_create(&workers[worker_num++], NULL, check_columns, NULL) != 0) {	// worker1 checks the columns
-        fprintf(stderr, "pthread_create error: check_columns\n");
-        exit(-1);
-    }
+	    /*
+	     * 스레드를 생성하여 각 열을 검사하는 check_columns() 함수를 실행한다.
+	     */
+	    if (pthread_create(&workers[worker_num++], NULL, check_columns, NULL) != 0) {	// worker1 checks the columns
+					fprintf(stderr, "pthread_create error: check_columns\n");
+					exit(-1);
+	    }
 
-    /*
-     * 9개의 스레드를 생성하여 각 3x3 서브그리드를 검사하는 check_subgrid() 함수를 실행한다.
-     * 3x3 서브그리드의 위치를 식별할 수 있는 값을 함수의 인자로 넘긴다.
-     */
-		 array_reset(&valid[2][0], 9, 0);
-		 for (i = 0; i < 9; i += 3) {
-			 for (j = 0; j < 9; j += 3) {
-				 // malloc a new location_t structure everytime to avoid using a same structure variable
-				 location_t *data = (location_t*)malloc(sizeof(location_t));
-				 data->row = i;
-				 data->col = j;
-				 data->sudgrid_worker_num = i+(j/3);
-				 if(pthread_create(&workers[worker_num++], NULL, check_subgrid, data) != 0) {	// pass the data saving the row and col to check
-					 fprintf(stderr, "pthread_create error: check_subgrid\n");
-					 exit(-1);
-				 }
+	    /*
+	     * 9개의 스레드를 생성하여 각 3x3 서브그리드를 검사하는 check_subgrid() 함수를 실행한다.
+	     * 3x3 서브그리드의 위치를 식별할 수 있는 값을 함수의 인자로 넘긴다.
+	     */
+			 array_reset(&valid[2][0], 9, 0);
+			 for (i = 0; i < 9; i += 3) {
+					 for (j = 0; j < 9; j += 3) {
+						 // malloc a new location_t structure everytime to avoid using a same structure variable
+						 	location_t *data = (location_t*)malloc(sizeof(location_t));
+						 	data->row = i;
+						 	data->col = j;
+						 	data->sudgrid_worker_num = i+(j/3);
+						 	if(pthread_create(&workers[worker_num++], NULL, check_subgrid, data) != 0) {	// pass the data saving the row and col to check
+									fprintf(stderr, "pthread_create error: check_subgrid\n");
+							 		exit(-1);
+						 	}
+					 	}
 			 }
-		 }
 
-    /*
-     * 11개의 스레드가 종료할 때까지 기다린다.
-     */
-    for (i = 0; i < 11; ++i) pthread_join(workers[i], NULL);
+	    /*
+	     * 11개의 스레드가 종료할 때까지 기다린다.
+	     */
+	    for (i = 0; i < 11; ++i) pthread_join(workers[i], NULL);
 
-    /*
-     * 각 행에 대한 검증 결과를 출력한다.
-     */
-    printf("ROWS: ");
-    for (i = 0; i < 9; ++i)
-        printf(valid[0][i] == 1 ? "(%d,YES)" : "(%d,NO)", i);
-    printf("\n");
+	    /*
+	     * 각 행에 대한 검증 결과를 출력한다.
+	     */
+	    printf("ROWS: ");
+	    for (i = 0; i < 9; ++i)
+					printf(valid[0][i] == 1 ? "(%d,YES)" : "(%d,NO)", i);
+			printf("\n");
 
-    /*
-     * 각 열에 대한 검증 결과를 출력한다.
-     */
-    printf("COLS: ");
-    for (i = 0; i < 9; ++i)
-        printf(valid[1][i] == 1 ? "(%d,YES)" : "(%d,NO)", i);
-    printf("\n");
+	    /*
+	     * 각 열에 대한 검증 결과를 출력한다.
+	     */
+	    printf("COLS: ");
+	    for (i = 0; i < 9; ++i)
+	        printf(valid[1][i] == 1 ? "(%d,YES)" : "(%d,NO)", i);
+	    printf("\n");
 
-    /*
-     * 각 3x3 서브그리드에 대한 검증 결과를 출력한다.
-     */
-    printf("GRID: ");
-    for (i = 0; i < 9; ++i)
-        printf(valid[2][i] == 1 ? "(%d,YES)" : "(%d,NO)", i);
-    printf("\n---\n");
+	    /*
+	     * 각 3x3 서브그리드에 대한 검증 결과를 출력한다.
+	     */
+	    printf("GRID: ");
+	    for (i = 0; i < 9; ++i)
+	        printf(valid[2][i] == 1 ? "(%d,YES)" : "(%d,NO)", i);
+	    printf("\n---\n");
 }
 
 /*
