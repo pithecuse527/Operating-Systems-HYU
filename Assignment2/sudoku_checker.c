@@ -1,4 +1,23 @@
 /*
+FILENAME : sudoku_checker.c
+
+DESCRIPTION :
+  Designing a C program checking a sudoku puzzle is valid or not using threads
+
+NOTES :
+  This C file is designed for assignment2 given by Dr. Hee Kuck Oh
+
+AUTHOR :  Hong Geun Ji      START DATE : 06 April 2021
+
+CHANGES :
+  NO   VERSION   DATE         WHO           DETAIL
+  1    1.1       06 April 2021  Hong Geun Ji  Complete the check_sudoku function
+	2    1.2       07 April 2021  Hong Geun Ji  Complete the checking row, col and subgrid function
+  3    1.3       07 April 2021  Hong Geun Ji  Revise check_subgrid() to works well with pthread
+  4    1.4			 10 April 2021  Hong Geun Ji  Merge the repetitive codes as a function
+*/
+
+/*
  * Copyright 2021. Heekuck Oh, all rights reserved
  * 이 프로그램은 한양대학교 ERICA 소프트웨어학부 재학생을 위한 교육용으로 제작되었습니다.
  */
@@ -6,6 +25,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <pthread.h>
+#define ROW_MODE 0
+#define COL_MODE 1
 #define TRUE 1
 #define FASLE 0
 
@@ -39,45 +60,55 @@ void array_reset(int *arr, int arr_size, int to_what)
 		for(i = 0; i < arr_size; ++i) *(arr+i) = to_what;
 }
 
+// check every elements
+void check_every_elements(int *hash, int mode)
+{
+	// index for hash (== row or col value)
+	int hash_idx;
+
+	// total checked elements of the row
+	// if the total == 9, it means there is no problem with the given sudoku row
+	// this will allow us to check whether the certain row is valid or not in O(1)
+	int total = 0;
+
+	// running indices
+	int i, j;
+
+	// check every elements
+	for(i = 0; i < 9; ++i) {
+			for(j = 0; j < 9; ++j) {
+					if (mode == ROW_MODE)	// ROW mode
+						hash_idx = sudoku[i][j]-1;
+					else if (mode == COL_MODE)		// COL mode
+						hash_idx = sudoku[j][i]-1;
+					// else  // todo: SUBGRIDS mode (no need to define this constant)
+					if(!hash[hash_idx]) {		// if there hasn't showed up the row value,
+							hash[hash_idx] = 1;
+							total++;
+					}
+					else break;	// no need to figure out the others
+				}
+				array_reset(hash, 9, 0);
+
+				if(total == 9) valid[mode][i] = 1;		// when the internal for loop haven't broken
+				total = 0;
+	}
+}
+
 /*
  * 스도쿠 퍼즐의 각 행이 올바른지 검사한다.
  * 행 번호는 0부터 시작하며, i번 행이 올바르면 valid[0][i]에 1을 기록한다.
  */
 void *check_rows(void *arg)
 {
-		// running indices
-  	int i, j;
-
-		// total checked elements of the row
-		// if the total == 9, it means there is no problem with the given sudoku row
-		// this will allow us to check whether the certain row is valid or not in O(1)
-		int total = 0;
-
 		// simple hash map to use the value inside of the sudoku row as a index
 		int row_hash[9];
-
-		// index for hash (== row value)
-		int hash_idx;
 
 		// reset every element to 0
 		array_reset(&valid[0][0], 9, 0);
 		array_reset(row_hash, 9, 0);
 
-		// check every elements
-		for(i = 0; i < 9; ++i) {
-				for(j = 0; j < 9; ++j) {
-						hash_idx = sudoku[i][j]-1;
-						if(!row_hash[hash_idx]) {		// if there hasn't showed up the row value,
-								row_hash[hash_idx] = 1;
-								total++;
-						}
-						else break;	// no need to figure out the others
-					}
-					array_reset(row_hash, 9, 0);
-
-					if(total == 9) valid[0][i] = 1;		// when the internal for loop haven't broken
-					total = 0;
-		}
+		check_every_elements(row_hash, ROW_MODE);
 		return 0;
 }
 
@@ -90,11 +121,6 @@ void *check_columns(void *arg)
 		// running indices
 		int i, j;
 
-		// total checked elements of the column
-		// if the total == 9, it means there is no problem with the given sudoku column
-		// this will allow us to check whether the certain column is valid or not in O(1)
-		int total = 0;
-
 		// simple hash map to use the value inside of the sudoku column as a index
 		int col_hash[9];
 
@@ -105,21 +131,7 @@ void *check_columns(void *arg)
 		array_reset(&valid[1][0], 9, 0);
 		array_reset(col_hash, 9, 0);
 
-		// check every elements
-		for(i = 0; i < 9; ++i) {
-				for(j = 0; j < 9; ++j) {
-						hash_idx = sudoku[j][i]-1;
-						if(!col_hash[hash_idx]) {		// if there hasn't showed up the column value,
-								col_hash[hash_idx] = 1;
-								total++;
-						}
-						else break;	// no need to figure out the others
-				}
-				array_reset(col_hash, 9, 0);
-
-				if(total == 9) valid[1][i] = 1;		// when the internal for loop haven't broken
-				total = 0;
-		}
+		check_every_elements(col_hash, COL_MODE);
 		return 0;
 }
 
