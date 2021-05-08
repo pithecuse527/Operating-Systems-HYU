@@ -19,16 +19,20 @@ int main() {
   pid_t child = fork();
   if (child == 0) {
     /* TODO: 자식 프로세스를 추적 가능하도록 설정 */
+    ptrace(PTRACE_TRACEME, 0,0,0);
     execl("/bin/ls", "ls", NULL);
   } else if (child < 0) {
     printf("Fork failed.\n");
+    exit(1);
   } else {
     int status;
     while (waitpid(child, &status, 0) && !WIFEXITED(status)) {
       /* TODO: 전체 레지스터 값을 가져오기 */
+      ptrace(PTRACE_GETREGS, child, 0, &regs);
       fprintf(stderr, "[SYSCALL]:%-20s\t%5lld\n", get_syscode(regs.orig_rax),
               regs.orig_rax);
       /* TODO: 매 시스템 콜 마다 실행을 중단하게끔 설정하기 */
+      ptrace(PTRACE_SYSCALL, child, 0,0);
     }
   }
   return 0;
