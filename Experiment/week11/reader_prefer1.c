@@ -262,7 +262,6 @@ int read_count = 0;
 void *reader(void *arg)
 {
     int id, i;
-
     /*
      * 들어온 인자를 통해 출력할 문자의 종류를 정한다.
      */
@@ -290,7 +289,7 @@ void *reader(void *arg)
         for (i = 0; i < N; ++i)
             printf("%c", 'A'+id);
         printf(">");
-        /* 
+        /*
          * End Critical Section
          */
         /*
@@ -397,7 +396,7 @@ int main(void)
             exit(-1);
         }
     }
-    /* 
+    /*
      * Create WNUM writer threads
      */
     for (i = 0; i < WNUM; ++i) {
@@ -407,7 +406,7 @@ int main(void)
             exit(-1);
         }
     }
-    /* 
+    /*
      * Wait for 0.2 second while the threads are working
      */
     req.tv_sec = 0;
