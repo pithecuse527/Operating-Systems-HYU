@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <pthread.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #define N 8192
 #define L1 75
@@ -299,7 +301,7 @@ void *reader(void *arg)
         for (i = 0; i < N; ++i)
             printf("%c", 'A'+id);
         printf(">");
-        /* 
+        /*
          * End Critical Section
          */
         /*
@@ -381,7 +383,7 @@ void *writer(void *arg)
             default:
                 ;
         }
-        /* 
+        /*
          * End Critical Section
          */
         /*
@@ -410,6 +412,10 @@ int main(void)
     pthread_t wthid[WNUM];
     struct timespec req, rem;
 
+    // stdout is now the txt file
+    int output_fd = open("reader_prefer.txt", O_CREAT|O_TRUNC|O_RDWR, 0666);
+    dup2(output_fd, STDOUT_FILENO);
+
     /*
      * Initialize mutex lock and condition variables
      */
@@ -426,7 +432,7 @@ int main(void)
             exit(-1);
         }
     }
-    /* 
+    /*
      * Create WNUM writer threads
      */
     for (i = 0; i < WNUM; ++i) {
@@ -436,7 +442,7 @@ int main(void)
             exit(-1);
         }
     }
-    /* 
+    /*
      * Wait for 0.2 second while the threads are working
      */
     req.tv_sec = 0;
