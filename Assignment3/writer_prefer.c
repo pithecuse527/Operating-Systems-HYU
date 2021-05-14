@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <pthread.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #define N 8192
 #define L1 75
@@ -268,9 +270,9 @@ void *reader(void *arg)
    * 스레드가 살아 있는 동안 같은 문자열 시퀀스 <XXX...XX>를 반복해서 출력한다.
    */
   while (alive) {
-    pthread_mutex_lock(&r_avail);   // reader available
-      pthread_mutex_lock(&r_mutex);   // r_cnt cannot be accessed at the same
-        if(++r_cnt == 1) pthread_mutex_lock(&rw_mutex);
+    pthread_mutex_lock(&r_avail);  // reader available when writer allows
+      pthread_mutex_lock(&r_mutex);  // r_cnt cannot be accessed at the same
+        if(++r_cnt == 1) pthread_mutex_lock(&rw_mutex); // first reader get rw_mutex for others
       pthread_mutex_unlock(&r_mutex);
     pthread_mutex_unlock(&r_avail);
 
@@ -317,8 +319,8 @@ void *writer(void *arg)
    * 스레드가 살아 있는 동안 같은 이미지를 반복해서 출력한다.
    */
   while (alive) {
-    pthread_mutex_lock(&w_mutex); // w_cnt cannot be accessed at the same
-      if(++w_cnt == 1) pthread_mutex_lock(&r_avail);    // first writer suspends readers
+    pthread_mutex_lock(&w_mutex);  // w_cnt cannot be accessed at the same
+      if(++w_cnt == 1) pthread_mutex_lock(&r_avail);  // first writer suspends readers
     pthread_mutex_unlock(&w_mutex);
 
     pthread_mutex_lock(&rw_mutex);  // writers cannot overlap each other
@@ -375,6 +377,10 @@ int main(void)
     pthread_t rthid[RNUM];
     pthread_t wthid[WNUM];
     struct timespec req, rem;
+
+    // stdout is now the txt file
+    int output_fd = open("writer_prefer.txt", O_CREAT|O_TRUNC|O_RDWR, 0666);
+    dup2(output_fd, STDOUT_FILENO);
 
     pthread_mutex_init(&rw_mutex, NULL);
     pthread_mutex_init(&r_mutex, NULL);
