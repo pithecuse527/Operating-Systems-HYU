@@ -371,6 +371,8 @@ int main(void)
 
     // stdout is now the txt file
     int output_fd = open("fair_reader_writer.txt", O_CREAT|O_TRUNC|O_RDWR, 0666);
+    if(output_fd)
+      printf("\n\n######### fair_reader_writer.txt created! #########\n\n");
     dup2(output_fd, STDOUT_FILENO);
 
     pthread_mutex_init(&rw_mutex, NULL);
@@ -401,7 +403,7 @@ int main(void)
      * Wait for 0.2 second while the threads are working
      */
     req.tv_sec = 0;
-    req.tv_nsec = 200000000L;
+    req.tv_nsec = 900000000L;
     nanosleep(&req, &rem);
     /*
      * Now terminate all threads and leave
@@ -415,6 +417,7 @@ int main(void)
     pthread_mutex_destroy(&rw_mutex);
     pthread_mutex_destroy(&r_mutex);
     pthread_mutex_destroy(&fcfs);
+
 
     exit(0);
 }
