@@ -96,9 +96,10 @@ static void *worker(void *param)
         if(dequeue(work) == 0) {    // try dequeue (should always work)
             (*(work->function))(work->data);    // let the bee do its job
         }
-        
-        // this should not happen as we already use the counting semaphore, "sem"
-        printf("WHAT THE HECK? this not supposed to happen...\n");
+        else {
+            // this should not happen as we already use the counting semaphore, "sem"
+            printf("WHAT THE HECK? this not supposed to happen...\n");
+        }
     }
     return NULL;
 }
