@@ -93,10 +93,14 @@ static void *worker(void *param)
     task_t* work = (task_t*)malloc(sizeof(task_t));
     while(1) {
         sem_wait(&sem);
-        if(dequeue(work) == 0) {    // try dequeue
+        if(dequeue(work) == 0) {    // try dequeue (should always work)
             (*(work->function))(work->data);    // let the bee do its job
         }
+        
+        // this should not happen as we already use the counting semaphore, "sem"
+        printf("WHAT THE HECK? this not supposed to happen...\n");
     }
+    return NULL;
 }
 
 /*
