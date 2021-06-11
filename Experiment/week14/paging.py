@@ -3,7 +3,7 @@ import sys
 Simple FIFO page replacement algorithm
 '''
 def FIFO(size, pages):
-    print("##### ##### Going for the FIFO ##### ##### ")
+    #print("##### ##### Going for the FIFO ##### ##### ")
     SIZE = size
     memory = []
     faults = 0
@@ -11,20 +11,20 @@ def FIFO(size, pages):
         if memory.count(page) == 0 and len(memory) < SIZE:  # still have empty space
             memory.append(page)
             faults += 1
-            print(memory)
+            #print(memory)
         elif memory.count(page) == 0 and len(memory) == SIZE:   # on full
             memory.pop(0)
             memory.append(page)
             faults += 1
-            print(memory)
-    print("##### ##### FIFO Fin. ##### #####\n")
+            #print(memory)
+    #print("##### ##### FIFO Fin. ##### #####\n")
     return faults
 
 '''
 LRU algorithm
 '''
 def LRU(size, pages):
-    print("##### ##### Going for the LRU ##### ##### ")
+    #print("##### ##### Going for the LRU ##### ##### ")
     SIZE = size
     memory = []
     faults = 0
@@ -32,18 +32,19 @@ def LRU(size, pages):
         if memory.count(page) == 0 and len(memory) < SIZE:
             memory.append(page)
             faults += 1
-            print(memory)
+            #print(memory)
         elif memory.count(page) == 0 and len(memory) == SIZE:
             memory.pop(0)
             memory.append(page)
             faults += 1
-            print(memory)
+            #print(memory)
         elif memory.count(page) > 0:
             memory.remove(page)
             memory.append(page)
-            print(memory)
+            #print(memory)
+    #print("##### ##### LRU Fin. ##### #####\n")
     return faults
-    print("##### ##### LRU Fin. ##### #####\n")
+
 
 def lookFuture(page, pages):
     i = 0
@@ -81,7 +82,7 @@ def main(s):
     pages = (7,0,1,2,0,3,0,4,2,3,0,3,2,1,2,0,1,7,0,1)
     size = s
     print('reference string\n', pages)
-    print('FIFO ->', FIFO(size,pages), 'page faults.\n')
+    print('\nFIFO ->', FIFO(size,pages), 'page faults.\n')
     print('LRU ->', LRU(size,pages), 'page faults.\n')
     print('OPT ->', OPT(size,pages), 'page faults.\n')
 
