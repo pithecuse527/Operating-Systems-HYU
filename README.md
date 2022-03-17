@@ -1,5 +1,5 @@
 # Operating-Systems-HYU
-Practice codes for Operating Systems, HYU
+Projects for Operating Systems course, HYU
 
 # Course
 Operating Systems, Hanyang University
